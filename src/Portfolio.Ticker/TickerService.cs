@@ -14,7 +14,7 @@ public class TickerService : TickerHandler.TickerHandlerBase
     private readonly IMongoRepository<MongoDB.Ticker> _tickerRepository;
 
     public TickerService(
-        RequestHandler requestHandler, 
+        RequestHandler requestHandler,
         TimeSeriesService timeSeriesService,
         IMongoRepository<MongoDB.Ticker> tickerRepository)
     {
@@ -23,101 +23,126 @@ public class TickerService : TickerHandler.TickerHandlerBase
         _timeSeriesService = timeSeriesService;
     }
 
-    public override Task<TickerResponse> Tickers(Empty request, ServerCallContext context)
-    {
-        var result = new TickerResponse();
-        var queryResult = _tickerRepository.FilterBy(_ => true);
-        foreach (var ticker in queryResult)
-        {
-            result.Tickers.Add((Ticker)ticker);
-        }
-        result.Source = "MongoDB";
-        return Task.FromResult(result);
-    }
-
-    public async Task<TickerResponse> AddTicker(string symbol)
-    {
-        var searchResult = await SearchTickers(symbol);
-
-        if (searchResult.Source != "AlphaVantage")
-        {
-            return searchResult;
-        }
-
-        var ticker = searchResult.Tickers.FirstOrDefault();
-        var addTicker = _tickerRepository.InsertUniqueAsync(_ => _.Symbol == ticker.Symbol, (MongoDB.Ticker) ticker);
-        var addTimeSeries = _timeSeriesService.AddTimeSeries(ticker.Symbol);
-        
-        await addTicker;
-        await addTimeSeries;
-
-        return searchResult; 
-    }
-
-    public async Task<TickerResponse>? SearchTickers(string symbol)
+    public override async Task<Response> Tickers(Empty request, ServerCallContext context)
     {
         try
         {
-            var mongoQueryResult = await SearchMongo(symbol);
-            if (mongoQueryResult.Tickers.Any())
+            var response = new Response
             {
-                return mongoQueryResult;
-            }
-            var alphaVantageResult = await SearchAlphaVantage(symbol);
-            if (alphaVantageResult.Tickers.Any())
-            {
-                return alphaVantageResult;
-            }
-            return new TickerResponse
-            {
-                Source = "Not Found",
+                Message = "Ok."
             };
+
+            var queryResult = _tickerRepository.FilterBy(_ => true);
+            var data = new Data(){
+                Source = "MongoDB"
+            };
+            foreach (var ticker in queryResult)
+            {
+                data.TickerList.Add((Ticker) ticker);
+            }
+            response.Data = data;
+            return response;
         }
         catch (Exception e)
         {
-            return new TickerResponse
+            var error = new Error
             {
-                Source = "Error",
-                Error = new Error
-                {
-                    ErrorMessage = e.Message,
-                    StackTrace = e.StackTrace
-                }
+                Message = e.Message,
+                StackTrace = e.StackTrace
             };
-            throw new Exception($"Error occurred while handling request with symbol: {symbol}, nested exception is: ", e);
+
+            return new Response
+            {
+                Message = "An error occurred while handling this request.",
+                Error = error
+            };
         }
     }
 
-    private async Task<TickerResponse> SearchMongo(string symbol)
+    public override async Task<Response> AddTicker(Symbol symbol, ServerCallContext context)
+    {
+        try
+        {
+            var response = new Response
+            {
+                Message = "Successfully created ticker."
+            };
+            var searchResult = await SearchTickers(symbol.Symbol_);
+            var data = new Data();
+            if (searchResult.Source != "AlphaVantage")
+            {
+                data.TickerList.Add(searchResult.Ticker);
+                data.Source = searchResult.Source;
+                response.Data = data;
+                return response;
+            }
+
+            var ticker = searchResult.Ticker;
+            await _tickerRepository.InsertUniqueAsync(_ => _.Symbol == ticker.Symbol, (MongoDB.Ticker)ticker);
+            await _timeSeriesService.AddTimeSeries(ticker.Symbol);
+
+            data.TickerList.Add(ticker);
+            data.Source = searchResult.Source;
+            response.Data = data;
+
+            return response;
+
+        }
+        catch (Exception e)
+        {
+
+            var error = new Error
+            {
+                Message = e.Message,
+                StackTrace = e.StackTrace
+            };
+
+            return new Response
+            {
+                Message = "An error occurred while handling this request.",
+                Error = error
+            };
+        }
+    }
+
+    public async Task<(string Source, Ticker? Ticker)> SearchTickers(string symbol)
+    {
+        var mongoResult = await SearchMongo(symbol);
+        if (mongoResult != null)
+        {
+            return (Source: "MongoDB", Ticker: mongoResult);
+        }
+
+        var alphaVantageResult = await SearchAlphaVantage(symbol);
+        if (alphaVantageResult != null)
+        {
+            return (Source: "AlphaVantage", Ticker: alphaVantageResult);
+        }
+        return (Source: "Not found", Ticker: null);
+    }
+
+    private async Task<Ticker?> SearchMongo(string symbol)
     {
         var mongoQueryResult = _tickerRepository.FindOneAsync(_ => _.Symbol == symbol);
-        
-        var searchResult = new TickerResponse
+        if (await mongoQueryResult != null)
         {
-            Source = "MongoDB",
-        };
-        if(await mongoQueryResult != null){
-            searchResult.Tickers.Add((Ticker) await mongoQueryResult);
+            return (Ticker)await mongoQueryResult;
         }
-        return searchResult;
+        return null;
     }
 
-    private async Task<TickerResponse> SearchAlphaVantage(string symbol)
+    private async Task<Ticker?> SearchAlphaVantage(string symbol)
     {
         var overviewResult = await _requestHandler.Handle<AlphaVantage.Ticker>(ApiFunction.OVERVIEW, new Dictionary<string, string>() { { "symbol", symbol } });
-        var searchResult = new TickerResponse
+        if (overviewResult != null)
         {
-            Source = "AlphaVantage"
-        };
-        if(overviewResult != null){
-            searchResult.Tickers.Add((Ticker) overviewResult);
-            return searchResult;
+            return (Ticker)overviewResult;
         }
-        var symbolSearchResult = await _requestHandler.Handle<SearchTicker> (ApiFunction.SYMBOL_SEARCH, new Dictionary<string, string>() {{"keywords",symbol}});
-        if(symbolSearchResult.BestMatches.Any())
+        var symbolSearchResult = await _requestHandler.Handle<SearchTicker>(ApiFunction.SYMBOL_SEARCH, new Dictionary<string, string>() { { "keywords", symbol } });
+        if (symbolSearchResult.BestMatches.Any())
         {
-            searchResult.Tickers.Add((Ticker) symbolSearchResult.BestMatches.First());
+            return (Ticker)symbolSearchResult.BestMatches.First();
         }
-        return searchResult;
+        return null;
     }
 }

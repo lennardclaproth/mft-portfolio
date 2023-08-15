@@ -1,17 +1,12 @@
 syntax = "proto3";
 
 option csharp_namespace = "MyFinancialTracker.Portfolio.Ticker";
-// import "google/api/annotations.proto";
 
 package Portfolio.Ticker;
 
 service TickerHandler {
-  rpc Tickers (Empty) returns (TickerResponse);
-//   rpc AddTicker (SymbolParameter) returns (TickerResponse) {
-//       option (google.api.http) = {
-//       post: "/v1/Ticker/{symbol}"
-//     };
-//   };
+  rpc Tickers (Empty) returns (Response);
+  rpc AddTicker (Symbol) returns (Response);
 }
 
 message Empty { }
@@ -20,20 +15,34 @@ message SymbolParameter {
     string Symbol = 1;
 }
 
-message TickerResponse {
-    repeated Ticker Tickers = 1;
+message Response {
+    string Message = 1;
+    optional Data Data = 2;
+    optional MetaData MetaData = 3;
+    optional Error Error = 4;
+}
+
+message Data {
+    repeated Ticker TickerList = 1;
     optional string Source = 2;
-    optional Error Error = 3;
+}
+
+message MetaData {
+    int32 Count = 1;
 }
 
 message Error {
-    string ErrorMessage = 1;
+    string Message = 1;
     string StackTrace = 2;
 }
 
+message Symbol {
+    string Symbol = 1;
+}
+
 message Ticker {
-    optional string Id = 1;
-    optional string ISIN = 2;
+    string Id = 1;
+    string ISIN = 2;
     string Symbol = 3;
     string Name = 4;
     string Description = 5;
@@ -42,8 +51,4 @@ message Ticker {
     string Sector = 8;
     string Industry = 9;
     string Currency = 10;
-}
-
-message Symbol {
-    string Symbol = 1;
 }

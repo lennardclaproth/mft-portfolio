@@ -11,9 +11,9 @@ public class TickerController : ControllerBase
         _tickerService = tickerService;
     }
 
-    [HttpPost, Route("Add")]
-    public async Task<IActionResult> AddTicker(string symbol){
-        var ticker = await _tickerService.AddTicker(symbol);
-        return StatusCode(201, ticker);
-    }
+    // [HttpPost, Route("Add")]
+    // public async Task<IActionResult> AddTicker(string symbol){
+    //     var ticker = await _tickerService.AddTicker(symbol);
+    //     return StatusCode(201, ticker);
+    // }
 }
