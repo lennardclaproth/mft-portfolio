@@ -22,6 +22,7 @@ builder.Services.AddControllers().AddJsonOptions(
     options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddEndpointsApiExplorer();
+
 // builder.Services.AddSwaggerGen();
 
 // Add services to the container.
@@ -32,6 +33,9 @@ builder.Services.AddSingleton<RequestHandler>();
 
 builder.Services.AddTransient<TimeSeriesService>();
 builder.Services.AddTransient<TickerService>();
+
+builder.Services.AddAuthentication().AddJwtBearer();
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
