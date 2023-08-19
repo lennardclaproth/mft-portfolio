@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson;
 
-namespace MyFinancialTracker.Portfolio.MongoDB;
+namespace LClaproth.MyFinancialTracker.Portfolio.MongoDB;
 
 [BsonCollection("tickers")]
 public class Ticker : AlphaVantage.Ticker, IDocument

@@ -1,4 +1,4 @@
-﻿namespace MyFinancialTracker.Portfolio.AlphaVantage;
+﻿namespace LClaproth.MyFinancialTracker.Portfolio.AlphaVantage;
 
 public static class QueryBuilder
 {

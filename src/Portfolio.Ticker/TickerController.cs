@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace MyFinancialTracker.Portfolio.Ticker;
+namespace LClaproth.MyFinancialTracker.Portfolio.Ticker;
 
 [ApiController, Route("[controller]")]
 public class TickerController : ControllerBase

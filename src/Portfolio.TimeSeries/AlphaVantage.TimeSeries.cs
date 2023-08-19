@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using System.Text.Json.Serialization;
 
-namespace MyFinancialTracker.Portfolio.AlphaVantage;
+namespace LClaproth.MyFinancialTracker.Portfolio.AlphaVantage;
 
 public class TimeSeries
 {

@@ -22,4 +22,8 @@
     <Folder Include="Portfolio.WeightedPerformance/" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\mft-eventBus\src\LClaproth.MyFinancialTracker.EventBus.csproj" />
+  </ItemGroup>
+
 </Project>

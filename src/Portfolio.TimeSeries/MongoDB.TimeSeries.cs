@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
-using MyFinancialTracker.Portfolio.AlphaVantage;
+using LClaproth.MyFinancialTracker.Portfolio.AlphaVantage;
 
-namespace MyFinancialTracker.Portfolio.MongoDB;
+namespace LClaproth.MyFinancialTracker.Portfolio.MongoDB;
 
 [BsonCollection("time_series")]
 public class TimeSeries : IDocument

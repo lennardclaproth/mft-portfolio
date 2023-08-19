@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Options;
 
-namespace MyFinancialTracker.Portfolio.AlphaVantage;
+namespace LClaproth.MyFinancialTracker.Portfolio.AlphaVantage;
 
 public enum ApiFunction {
     SYMBOL_SEARCH,

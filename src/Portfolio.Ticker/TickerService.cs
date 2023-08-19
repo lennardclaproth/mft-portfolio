@@ -1,11 +1,11 @@
 using Grpc.Core;
 using MongoDB.Driver;
 using System.Linq.Expressions;
-using MyFinancialTracker.Portfolio.MongoDB;
-using MyFinancialTracker.Portfolio.TimeSeries;
-using MyFinancialTracker.Portfolio.AlphaVantage;
+using LClaproth.MyFinancialTracker.Portfolio.MongoDB;
+using LClaproth.MyFinancialTracker.Portfolio.TimeSeries;
+using LClaproth.MyFinancialTracker.Portfolio.AlphaVantage;
 
-namespace MyFinancialTracker.Portfolio.Ticker;
+namespace LClaproth.MyFinancialTracker.Portfolio.Ticker;
 
 public class TickerService : TickerHandler.TickerHandlerBase
 {

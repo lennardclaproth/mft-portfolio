@@ -1,7 +1,7 @@
-﻿using MyFinancialTracker.Portfolio.MongoDB;
-using MyFinancialTracker.Portfolio.AlphaVantage;
+﻿using LClaproth.MyFinancialTracker.Portfolio.MongoDB;
+using LClaproth.MyFinancialTracker.Portfolio.AlphaVantage;
 
-namespace MyFinancialTracker.Portfolio.TimeSeries;
+namespace LClaproth.MyFinancialTracker.Portfolio.TimeSeries;
 
 public class TimeSeriesService
 {

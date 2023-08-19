@@ -1,4 +1,4 @@
-namespace MyFinancialTracker.Portfolio.MongoDB;
+namespace LClaproth.MyFinancialTracker.Portfolio.MongoDB;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public class BsonCollectionAttribute : Attribute

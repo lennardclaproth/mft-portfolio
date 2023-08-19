@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace MyFinancialTracker.Portfolio.MongoDB;
+namespace LClaproth.MyFinancialTracker.Portfolio.MongoDB;
 
 public interface IMongoRepository<TDocument> where TDocument : IDocument
 {

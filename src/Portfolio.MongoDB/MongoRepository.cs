@@ -2,7 +2,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Linq.Expressions;
 
-namespace MyFinancialTracker.Portfolio.MongoDB;
+namespace LClaproth.MyFinancialTracker.Portfolio.MongoDB;
 
 public class MongoRepository<TDocument> : IMongoRepository<TDocument>
     where TDocument : IDocument

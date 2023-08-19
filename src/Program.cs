@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Options;
 using System.Text.Json.Serialization;
-using MyFinancialTracker.Portfolio.Ticker;
-using MyFinancialTracker.Portfolio.MongoDB;
-using MyFinancialTracker.Portfolio.TimeSeries;
-using MyFinancialTracker.Portfolio.AlphaVantage;
+using LClaproth.MyFinancialTracker.Portfolio.Ticker;
+using LClaproth.MyFinancialTracker.Portfolio.MongoDB;
+using LClaproth.MyFinancialTracker.Portfolio.TimeSeries;
+using LClaproth.MyFinancialTracker.Portfolio.AlphaVantage;
 
 var builder = WebApplication.CreateBuilder(args);
 

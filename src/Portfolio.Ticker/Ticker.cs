@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson;
 
-namespace MyFinancialTracker.Portfolio.Ticker;
+namespace LClaproth.MyFinancialTracker.Portfolio.Ticker;
 
 public partial class Ticker
 {
