@@ -1,10 +1,3 @@
-using Grpc.Core;
-using MongoDB.Driver;
-using System.Linq.Expressions;
-using LClaproth.MyFinancialTracker.Portfolio.MongoDB;
-using LClaproth.MyFinancialTracker.Portfolio.TimeSeries;
-using LClaproth.MyFinancialTracker.Portfolio.AlphaVantage;
-
 namespace LClaproth.MyFinancialTracker.Portfolio.Ticker;
 
 public class TickerService : TickerHandler.TickerHandlerBase
@@ -12,21 +5,25 @@ public class TickerService : TickerHandler.TickerHandlerBase
     private readonly RequestHandler _requestHandler;
     private readonly TimeSeriesService _timeSeriesService;
     private readonly IMongoRepository<MongoDB.Ticker> _tickerRepository;
+    private readonly IEventBus _eventBus;
 
     public TickerService(
         RequestHandler requestHandler,
         TimeSeriesService timeSeriesService,
-        IMongoRepository<MongoDB.Ticker> tickerRepository)
+        IMongoRepository<MongoDB.Ticker> tickerRepository,
+        IEventBus eventBus)
     {
         _requestHandler = requestHandler;
         _tickerRepository = tickerRepository;
         _timeSeriesService = timeSeriesService;
+        _eventBus = eventBus;
     }
 
     public override async Task<Response> Tickers(Empty request, ServerCallContext context)
     {
         try
         {
+            await _eventBus.Publish(new TestIntegrationEvent());
             var response = new Response
             {
                 Message = "Ok."

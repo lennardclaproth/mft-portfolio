@@ -4,11 +4,17 @@ using LClaproth.MyFinancialTracker.Portfolio.Ticker;
 using LClaproth.MyFinancialTracker.Portfolio.MongoDB;
 using LClaproth.MyFinancialTracker.Portfolio.TimeSeries;
 using LClaproth.MyFinancialTracker.Portfolio.AlphaVantage;
+using LClaproth.MyFinancialTracker.EventBus;
+using LClaproth.MyFinancialTracker.EventBus.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Additional configuration is required to successfully run gRPC on macOS.
 // For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
+
+var ApplicationName = builder.Configuration.GetValue<string>("ApplicationInfo:ApplicationName") ?? throw new InvalidOperationException("Application name 'ApplicationInfo:ApplicationName' not found.");
+Environment.SetEnvironmentVariable("ApplicationName",ApplicationName);
+// var env = Environment.GetEnvironmentVariables();
 
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDB"));
 
@@ -22,6 +28,8 @@ builder.Services.AddControllers().AddJsonOptions(
     options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddRabbitMQEventBus();
 
 // builder.Services.AddSwaggerGen();
 
